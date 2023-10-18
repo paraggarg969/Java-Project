@@ -2,6 +2,7 @@ import javax.swing.JFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.*;
 
 public class Login extends JFrame implements ActionListener {
     JButton login, clear, signup;
@@ -13,7 +14,7 @@ public class Login extends JFrame implements ActionListener {
 
         setLayout(null);
 
-        // ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("src/icons/logo.jpg"));
+        // ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("icons/logo.jpg"));
         // Image i2  = i1.getImage().getScaledInstance(100,100,Image.SCALE_DEFAULT);
         // ImageIcon i3 = new ImageIcon(i2);
         // JLabel label = new JLabel(i3);
@@ -77,7 +78,24 @@ public class Login extends JFrame implements ActionListener {
             pintextfield.setText("");
         }
         else if(ae.getSource() == login){
+            conn c = new conn();
+            String cardnumber = cardtextfield.getText();
+            String pinnumber = pintextfield.getText();
+            String query = "Select * from login where cardnumber = '"+cardnumber+"' and pin = '"+pinnumber+"'";
 
+            try{
+                ResultSet rs = c.s.executeQuery(query);
+                if(rs.next()){
+                    setVisible(false);
+                    new Transaction(pinnumber).setVisible(true);
+                }
+                else{
+                    JOptionPane.showMessageDialog(null,"Incorrect Card Number or Pin");
+                }
+            }
+            catch(Exception e){
+                System.out.println(e);
+            }
         }
         else if(ae.getSource() == signup){
             setVisible(false);
