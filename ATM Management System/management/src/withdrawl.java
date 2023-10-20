@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -49,29 +50,65 @@ public class withdrawl extends JFrame implements ActionListener{
     }
 
     public void actionPerformed(ActionEvent ae){
-        if(ae.getSource() == withdrawl){
-            String number = amount.getText();
-            String date = new SimpleDateFormat("yyy-MM-dd hh:mm:ss").format(Calendar.getInstance().getTime());
-            try{
-                if(number.equals("")){
-                    JOptionPane.showMessageDialog(null,"Please enter the amount you want to withdrawl");
-                }
-                else{
-                    conn c = new conn();
-                    String query = "insert into bank values('"+pinnumber+"','"+date+"','withdrawl','"+number+"')";
-                    c.s.executeUpdate(query);
-                    JOptionPane.showMessageDialog(null,"Rs "+number+" withdrawl Successfully");
-                    setVisible(false);
-                    new Transaction(pinnumber).setVisible(true);
-                }
-            }
-            catch(Exception e){
-                System.out.println(e);
-            }
-        }
-        else if(ae.getSource() == back){
+        // if(ae.getSource() == withdrawl){
+        //     String number = amount.getText();
+        //     String date = new SimpleDateFormat("yyy-MM-dd hh:mm:ss").format(Calendar.getInstance().getTime());
+        //     try{
+        //         if(number.equals("")){
+        //             JOptionPane.showMessageDialog(null,"Please enter the amount you want to withdrawl");
+        //         }
+        //         else{
+        //             conn c = new conn();
+        //             String query = "insert into bank values('"+pinnumber+"','"+date+"','withdrawl','"+number+"')";
+        //             c.s.executeUpdate(query);
+        //             JOptionPane.showMessageDialog(null,"Rs "+number+" withdrawl Successfully");
+        //             setVisible(false);
+        //             new Transaction(pinnumber).setVisible(true);
+        //         }
+        //     }
+        //     catch(Exception e){
+        //         System.out.println(e);
+        //     }
+        // }
+        // else if(ae.getSource() == back){
+        //     setVisible(false);
+        //     new Transaction(pinnumber).setVisible(true);
+        // }
+
+
+        if(ae.getSource()==back){
             setVisible(false);
             new Transaction(pinnumber).setVisible(true);
+        }
+        else{
+           String am = amount.getText();
+           conn c = new conn();
+           try{
+            ResultSet rs = c.s.executeQuery("Select * from bank where pin = '"+pinnumber+"'");
+            int balance = 0;
+            while(rs.next()){
+                if(rs.getString("type").equals("Deposit")){
+                    balance += Integer.parseInt(rs.getString("amount"));
+                }
+                else{
+                    balance -= Integer.parseInt(rs.getString("amount"));
+                }
+            }
+            if((ae.getSource() != back) && (balance < Integer.parseInt(am))){
+                JOptionPane.showMessageDialog(null,"Insufficient Balance");
+                return;
+            }
+            String date = new SimpleDateFormat("yyy-MM-dd hh:mm:ss").format(Calendar.getInstance().getTime());
+            String query = "insert into bank values('"+pinnumber+"','"+date+"','withdrawl','"+am+"')";
+            c.s.executeUpdate(query);
+            JOptionPane.showMessageDialog(null,"Rs "+am+" withdrawl Successfully");
+
+            setVisible(false);
+            new Transaction(pinnumber).setVisible(true);
+           }
+           catch(Exception e){
+            System.out.println(e);
+           }
         }
     }
     public static void main(String args[]){
