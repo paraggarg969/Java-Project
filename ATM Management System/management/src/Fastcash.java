@@ -1,9 +1,9 @@
 import javax.swing.*;
 import java.sql.*;
-import java.text.NumberFormat;
+// import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
+// import java.util.Locale;
 import java.awt.*;
 import java.awt.event.*;
 public class Fastcash extends JFrame implements ActionListener{
